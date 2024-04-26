@@ -4,7 +4,7 @@ library(ggplot2)
 ## change if the downloads are timing out; default is 60
 options(timeout=300)
 
-if(!file.exists(here::here("data", "ICIS_PERMITS.csv"))) {
+if(!file.exists(here::here("data", "csv_files", "ICIS_PERMITS.csv"))) {
   echo_data_url <- "https://echo.epa.gov/files/echodownloads/npdes_downloads.zip"
   
   temp <- tempfile()
@@ -33,7 +33,7 @@ perm_components_pretreat <- fread(here::here("data", "csv_files", "NPDES_PERM_CO
   select(-COMPONENT_TYPE_DESC)
 
 
-if(!file.exists(here::here("data", "NPDES_LIMITS.csv"))) {
+if(!file.exists(here::here("data", "csv_files", "NPDES_LIMITS.csv"))) {
   echo_data_url <- "https://echo.epa.gov/files/echodownloads/npdes_limits.zip"
   
   temp <- tempfile()
@@ -124,7 +124,7 @@ icis_permits_most_recent_summarized <- icis_permits2 %>%
   slice(1) %>%                                   ##
   ungroup() %>%
   mutate(e90_ratio = num_e90/num_limits_per_year) %>%
-  filter(TOTAL_DESIGN_FLOW_NMBR <= 2) %>%
+  filter(TOTAL_DESIGN_FLOW_NMBR <= 10) %>%
   group_by(design_flow_round) %>%
   summarise(mean_snc = mean(num_snc, na.rm = TRUE), 
             mean_e90 = mean(num_e90, na.rm = TRUE),
