@@ -4,6 +4,7 @@
 .Ruserdata
 
 *.csv
+*.zip
 *.Rda
 *.png
 *.jpeg
