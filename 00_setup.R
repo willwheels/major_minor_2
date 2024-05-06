@@ -8,4 +8,5 @@ dir_create_if_not_exist <- function(dir_name, ...) {
 dir_create_if_not_exist("data")
 dir_create_if_not_exist("data", "csv_files")
 dir_create_if_not_exist("data", "R_data_files")
+dir_create_if_not_exist("data", "zip_files")
 dir_create_if_not_exist("figs")
