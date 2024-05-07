@@ -3,6 +3,7 @@ library(ggplot2)
 
 ## change if the downloads are timing out; default is 60
 options(timeout=300)
+#options(timeout=1000000) ##For Tina's PC
 
 if(!file.exists(here::here("data", "csv_files", "ICIS_PERMITS.csv"))) {
   echo_data_url <- "https://echo.epa.gov/files/echodownloads/npdes_downloads.zip"

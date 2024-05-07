@@ -86,3 +86,21 @@ dmr_years <- as.character(2018:2023)
 purrr::walk(dmr_years, download_dmr_file)
 
 purrr::walk(dmr_years, fread_dmrs)
+
+
+## Erase zip files
+
+delete_zip_files <- function(dmr_year){
+  
+  print(paste("delete zip files for",  dmr_year))
+  
+  dmr_file <- here::here("data", "zip_files", paste0("npdes_dmrs_fy", dmr_year, ".zip"))
+  
+  if (file.exists(dmr_file)) {
+    file.remove(dmr_file)
+  }
+  
+}
+
+purrr::walk(dmr_years, delete_zip_files)
+
