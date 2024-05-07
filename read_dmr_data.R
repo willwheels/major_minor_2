@@ -3,6 +3,7 @@ library(tidytable)
 #remotes::install_version("data.table", version = "1.15.0")
 
 options(timeout = 300)
+#options(timeout = 1000000) ##For Tina's PC
 
 download_dmr_file <- function(dmr_year) {
   
@@ -36,7 +37,11 @@ fread_dmrs <- function(dmr_year) {
   
   dmr_file <- here::here("data", "zip_files", paste0("npdes_dmrs_fy", dmr_year, ".zip"))
   
-  dmr_data <- fread(dmr_file, 
+  unzip(dmr_file, files = paste0("NPDES_DMRS_FY",dmr_year,".csv"), exdir = here::here("data", "csv_files"))
+  
+  dmr_file <- here::here("data", "csv_files", paste0("NPDES_DMRS_FY", dmr_year, ".csv"))
+  
+  dmr_data <- tidytable::fread(dmr_file, 
                     select = c(EXTERNAL_PERMIT_NMBR = "character",
                                VERSION_NMBR = "integer",
                                PERM_FEATURE_NMBR = "character",
@@ -56,7 +61,10 @@ fread_dmrs <- function(dmr_year) {
                                MONITORING_PERIOD_END_DATE = "character",
                                VALUE_RECEIVED_DATE = "character", 
                                DAYS_LATE = "integer",
-                               VIOLATION_CODE = "character"
+                               VIOLATION_CODE = "character",
+                               NODI_CODE = "character",
+                               DMR_VALUE_STANDARD_UNITS = "numeric",
+                               LIMIT_SET_DESIGNATOR = "character"
         )
   )
   
@@ -71,8 +79,6 @@ fread_dmrs <- function(dmr_year) {
   save(dmr_data, file = here::here("data", "R_data_files", paste0("dmr_data_", dmr_year, ".Rda")))
   
 }
-
-
 
 
 dmr_years <- as.character(2018:2023)
