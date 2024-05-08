@@ -53,18 +53,22 @@ fread_dmrs <- function(dmr_year) {
                                LIMIT_VALUE_NMBR = "numeric",
                                LIMIT_UNIT_CODE  = "character",
                                LIMIT_VALUE_QUALIFIER_CODE = "character",
+                               LIMIT_VALUE_ID = "character",
+                               LIMIT_SET_DESIGNATOR = "character",
                                DMR_VALUE_NMBR = "numeric",
                                DMR_UNIT_CODE = "character",
                                DMR_VALUE_QUALIFIER_CODE = "character",
+                               DMR_VALUE_STANDARD_UNITS = "numeric",
+                               DMR_VALUE_ID = "character",
+                               VALUE_TYPE_CODE = "character",
+                               NODI_CODE = "character",
                                EXCEEDENCE_PCT = "integer64",
                                STATISTICAL_BASE_CODE = "character",
+                               STATISTICAL_BASE_TYPE_CODE = "character",
                                MONITORING_PERIOD_END_DATE = "character",
                                VALUE_RECEIVED_DATE = "character", 
                                DAYS_LATE = "integer",
-                               VIOLATION_CODE = "character",
-                               NODI_CODE = "character",
-                               DMR_VALUE_STANDARD_UNITS = "numeric",
-                               LIMIT_SET_DESIGNATOR = "character"
+                               VIOLATION_CODE = "character"
         )
   )
   
