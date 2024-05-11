@@ -33,13 +33,15 @@ download_dmr_file <- function(dmr_year) {
 
 fread_dmrs <- function(dmr_year) {
   
+  inv_gc()
+  
   print(paste("process dmr files for",  dmr_year))
   
   dmr_file <- here::here("data", "zip_files", paste0("npdes_dmrs_fy", dmr_year, ".zip"))
   
-  unzip(dmr_file, files = paste0("NPDES_DMRS_FY",dmr_year,".csv"), exdir = here::here("data", "csv_files"))
+  #unzip(dmr_file, files = paste0("NPDES_DMRS_FY",dmr_year,".csv"), exdir = here::here("data", "csv_files"))
   
-  dmr_file <- here::here("data", "csv_files", paste0("NPDES_DMRS_FY", dmr_year, ".csv"))
+  #dmr_file <- here::here("data", "csv_files", paste0("NPDES_DMRS_FY", dmr_year, ".csv"))
   
   dmr_data <- tidytable::fread(dmr_file, 
                     select = c(EXTERNAL_PERMIT_NMBR = "character",
@@ -76,11 +78,12 @@ fread_dmrs <- function(dmr_year) {
     mutate(monitoring_period_end_date2 = lubridate::mdy(MONITORING_PERIOD_END_DATE),
            value_received_date2 = lubridate::mdy(VALUE_RECEIVED_DATE)) %>%
     select(-MONITORING_PERIOD_END_DATE, -VALUE_RECEIVED_DATE)
-  
-  
 
   
   save(dmr_data, file = here::here("data", "R_data_files", paste0("dmr_data_", dmr_year, ".Rda")))
+  
+  rm(dmr_data)
+  inv_gc()
   
 }
 
