@@ -64,6 +64,7 @@ fread_dmrs <- function(dmr_year) {
                                DMR_VALUE_QUALIFIER_CODE = "character",
                                DMR_VALUE_STANDARD_UNITS = "numeric",
                                DMR_VALUE_ID = "character",
+                               STANDARD_UNIT_CODE = "character",
                                VALUE_TYPE_CODE = "character",
                                NODI_CODE = "character",
                                EXCEEDENCE_PCT = "integer64",
