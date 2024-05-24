@@ -3,7 +3,7 @@ library(tidytable)
 #remotes::install_version("data.table", version = "1.15.0")
 
 options(timeout = 300)
-#options(timeout = 1000000) ##For Tina's PC
+options(timeout = 1000000) ##For Tina's PC
 
 download_dmr_file <- function(dmr_year) {
   
@@ -59,6 +59,7 @@ fread_dmrs <- function(dmr_year) {
                                DMR_UNIT_CODE = "character",
                                DMR_VALUE_QUALIFIER_CODE = "character",
                                DMR_VALUE_STANDARD_UNITS = "numeric",
+                               STANDARD_UNIT_DESC = "character",
                                DMR_VALUE_ID = "character",
                                VALUE_TYPE_CODE = "character",
                                NODI_CODE = "character",
