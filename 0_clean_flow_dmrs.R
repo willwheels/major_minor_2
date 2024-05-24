@@ -46,11 +46,8 @@ get_flow <- function(year){
   save(dmr_data, file = here::here("temp", paste0("flow_dmrs_", year, ".Rda")))
 }
 
-# Extract rows with flow DMRS 
-
-## Create a list of dmr data files
+# Apply function to each year
 dmr_years <- as.character(2018:2023)
-
 purrr::walk(dmr_years, get_flow)
 
 
@@ -62,7 +59,7 @@ for (year in 2019:2023){
   flow_dmrs <- rbind(flow_dmrs, dmr_data)
 }
 
-save(flow_dmrs, file = here::here("data", "R_data_files", "flow_dmrs.Rda"))
+save(flow_dmrs, file = here::here("temp", "flow_dmrs.Rda"))
 
 
 
@@ -185,7 +182,7 @@ icis_permits <- fread(here::here("data", "csv_files", "ICIS_PERMITS.csv"))
 colnames(icis_permits) <- tolower(colnames(icis_permits))
 icis_permits <- icis_permits %>%
   rename_with(tolower) %>%
-  select(external_permit_nmbr, version_nmbr, total_design_flow_nmbr, 
+  select(external_permit_nmbr, version_nmbr, total_design_flow_nmbr, permit_status_code,
          actual_average_flow_nmbr, major_minor_status_flag, facility_type_indicator)
 
 
@@ -217,7 +214,7 @@ flow_icis <- flow_icis %>%
   mutate(flow_correct = replace(flow_correct, flow_correct > 5000, flow_correct/1000000))
 
 ## Save
-save(flow_icis, file = here::here("data", "R_data_files", "flow.Rda"))
+save(flow_icis, file = here::here("data", "R_data_files", "flow_dmrs.Rda"))
 
 
 
