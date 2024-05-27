@@ -71,9 +71,9 @@ icis_permits2 <- icis_permits %>%
   arrange(EXTERNAL_PERMIT_NMBR, VERSION_NMBR) %>%
   filter(!is.na(TOTAL_DESIGN_FLOW_NMBR)) %>%
   mutate(flow_over_design = ACTUAL_AVERAGE_FLOW_NMBR - TOTAL_DESIGN_FLOW_NMBR,
-         design_flow_round = plyr::round_any(TOTAL_DESIGN_FLOW_NMBR, .1, floor),
-         design_flow_round_smaller = plyr::round_any(TOTAL_DESIGN_FLOW_NMBR, .01, floor),
-         design_flow_round_small = plyr::round_any(TOTAL_DESIGN_FLOW_NMBR, .001, floor))
+         design_flow_round_one_decimal = plyr::round_any(TOTAL_DESIGN_FLOW_NMBR, .1, floor),
+         design_flow_round_two_decimals = plyr::round_any(TOTAL_DESIGN_FLOW_NMBR, .01, floor),
+         design_flow_round_three_decimals = plyr::round_any(TOTAL_DESIGN_FLOW_NMBR, .001, floor))
 
 
 summary(icis_permits2)
@@ -126,7 +126,7 @@ icis_permits_most_recent_summarized <- icis_permits2 %>%
   ungroup() %>%
   mutate(e90_ratio = num_e90/num_limits_per_year) %>%
   filter(TOTAL_DESIGN_FLOW_NMBR <= 10) %>%
-  group_by(design_flow_round) %>%
+  group_by(design_flow_round_one_decimal) %>%
   summarise(mean_snc = mean(num_snc, na.rm = TRUE), 
             mean_e90 = mean(num_e90, na.rm = TRUE),
             mean_num_limits_per_year = mean(num_limits_per_year, na.rm = TRUE),
@@ -134,7 +134,7 @@ icis_permits_most_recent_summarized <- icis_permits2 %>%
             mean_CEI = mean(num_CEI, na.rm = TRUE),
             mean_e90_ratio = mean(e90_ratio, na.rm = TRUE),
             num_in_bin = n()) %>%
-  arrange(desc(design_flow_round)) %>%
+  arrange(desc(design_flow_round_one_decimal)) %>%
   ungroup()
 
 
