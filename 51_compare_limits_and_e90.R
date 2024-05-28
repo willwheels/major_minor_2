@@ -61,9 +61,9 @@ dmr_data_counts_by_flow <- dmr_e90_count_data %>%
 ggplot(dmr_data_counts_by_flow %>% filter(design_flow_round <= 2), 
        aes(x = design_flow_round, y = mean_num_limits, size = num_in_bin)) +
   geom_point() +
-  labs(title = "Mean Number of Enforceable Limits by Design Flow") +
+  #labs(title = "Mean Number of Enforceable Limits by Design Flow") +
   ylab("Mean Number Limits") + xlab("Design Flow (rounded to single decimal)") +
-  theme_minimal()
+  theme_tina
 
 ggsave("num_limits_by_design_flow_dots.png", path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")  
@@ -71,9 +71,9 @@ ggsave("num_limits_by_design_flow_dots.png", path = here::here("figs"),
 ggplot(dmr_data_counts_by_flow %>% filter(design_flow_round <= 2), 
        aes(x = design_flow_round, y = mean_e90, size = num_in_bin)) +
   geom_point() +
-  labs(title = "Mean Number of Effluent Violations by Design Flow") +
+  #labs(title = "Mean Number of Effluent Violations by Design Flow") +
   ylab("Mean Violations") + xlab("Design Flow (rounded to single decimal)") +
-  theme_minimal()
+  theme_tina
 
 ggsave("e90_by_design_flow_dots.png", path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")  
@@ -81,9 +81,9 @@ ggsave("e90_by_design_flow_dots.png", path = here::here("figs"),
 ggplot(dmr_data_counts_by_flow %>% filter(design_flow_round <= 2), 
        aes(x = design_flow_round, y = mean_e90_rate, size = num_in_bin)) +
   geom_point() +
-  labs(title = "Mean Effluent Violation Rate by Design Flow") +
+  #labs(title = "Mean Effluent Violation Rate by Design Flow") +
   ylab("Mean Exceedence Rate") + xlab("Design Flow (rounded to single decimal)") +
-  theme_minimal()
+  theme_tina
 
 ggsave("e90_rate_by_design_flow_dots.png", path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")  

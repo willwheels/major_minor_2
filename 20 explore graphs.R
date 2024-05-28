@@ -5,6 +5,7 @@ library(dplyr)
 load(here::here("data", "R_data_files", "all_potw_permits.Rda"))
 load(here::here("data", "R_data_files", "all_potw_permits_most_recent.Rda"))
 
+source(here::here("theme_tina.R"))
 
 ggplot(icis_permits2 %>% filter(design_flow_round <= 5, design_flow_round > 0), 
        aes(x = design_flow_round)) +
@@ -12,9 +13,9 @@ ggplot(icis_permits2 %>% filter(design_flow_round <= 5, design_flow_round > 0),
   annotate("rect", xmin = .7, xmax = 1.2, ymin = 250, ymax = 450, alpha = .2, color = "red") +
   annotate("text", x = 1.5, y = 1500, label = "1 MGD") +
   geom_vline(xintercept = 1, linetype = 2) +
-  labs(title = "Histogram of POTW Flows") +
+  #labs(title = "Histogram of POTW Flows") +
   xlab("Design Flow (rounded to single decimal)") + ylab("Count") +
-  theme_minimal()
+  theme_tina
 
 ggsave("design_flow_hist.png", path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")
@@ -43,8 +44,22 @@ ggplot(icis_permits2 %>% filter(design_flow_round_small >= .8, design_flow_round
   theme_minimal()
 
 design_flow_counts <- icis_permits2 %>%
-  group_by(design_flow_round_small) %>%
+  group_by(design_flow_round) %>%
   count()
+
+ggplot(design_flow_counts %>% filter(design_flow_round <= 5, design_flow_round > 0), 
+       aes(x = design_flow_round, y = n)) +
+  geom_col() + 
+  annotate("rect", xmin = .7, xmax = 1.2, ymin = 250, ymax = 450, alpha = .2, color = "red") +
+  annotate("text", x = 1.5, y = 1500, label = "1 MGD") +
+  geom_vline(xintercept = 1, linetype = 2) +
+  #labs(title = "Histogram of POTW Flows") +
+  xlab("Design Flow (rounded to single decimal)") + ylab("Count") +
+  theme_tina
+
+ggsave("design_flow_col.png", path = here::here("figs"),
+       h = 8.5, w = 11, units = "in", bg = "white")
+
 
 ggplot(icis_permits2 %>% filter(flow_over_design < 1, flow_over_design > -1), 
        aes(x = flow_over_design)) +
@@ -81,9 +96,9 @@ ggplot(icis_permits3, aes(x = design_flow_round, y = mean_snc)) +
 
 ggplot(icis_permits3, aes(x = design_flow_round, y = mean_snc, size = num_in_bin)) +
   geom_point() +
-  labs(title = "Mean Number of Quarters in SNC Since 2018 by Design Flow") +
+  #labs(title = "Mean Number of Quarters in SNC Since 2018 by Design Flow") +
   ylab("Mean Quarters in SNC") + xlab("Design Flow (rounded to single decimal)") +
-  theme_minimal()
+  theme_tina
 
 ggsave("snc_by_design_flow_dots.png", path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")
@@ -99,7 +114,7 @@ ggplot(icis_permits3, aes(x = design_flow_round, y = mean_e90, size = num_in_bin
   geom_point() +
   labs(title = "Mean Number of E90 Violations Since 2018 by Design Flow") +
   ylab("Mean Number E90s") + xlab("Design Flow (rounded to single decimal)") +
-  theme_minimal()
+  theme_tina
 
 ggsave("e90_by_design_flow_dots.png",  path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")
@@ -118,7 +133,7 @@ ggplot(icis_permits3, aes(x = design_flow_round, y = mean_inspections, size = nu
   geom_vline(xintercept = 1, linetype = 2) +
   labs(title = "Mean Number of Inspections Since 2018 by Design Flow") +
   ylab("Mean Number Inspectionss") + xlab("Design Flow (rounded to single decimal)") +
-  theme_minimal()
+  theme_tina
 
 ggsave("inspections_by_design_flow_dots.png",  path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")
