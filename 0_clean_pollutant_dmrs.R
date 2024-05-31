@@ -12,7 +12,7 @@ library(udpipe)
 # Extract DMRs for five conventional parameters ----
 
 ## Parameter codes for five conventional parameters
-param_codes <- c("00310", "00300", "00530", "31641", "00400") ## BOD, DO, TSS, Fecal coliform, pH
+param_codes <- c("00310", "00300", "00530", "00600", "00665") ## BOD, DO, TSS, TN, TP
 
 ## Create a function that extracts rows with conventional pollutants' DMRs ----
 get_pollutant_dmrs <- function(year){
@@ -53,7 +53,7 @@ for (year in 2019:2023){
 }
 
 save(pollutant_dmrs, file = here::here("temp", "pollutant_dmrs.Rda"))
-
+rm(dmr_data)
 
 
 # Generate a year variable
@@ -80,8 +80,8 @@ pollutant_dmrs <- pollutant_dmrs %>%
   mutate(pollutant_type = tidytable::case_when(parameter_code == "00310" ~ "BOD",
                                                parameter_code == "00300" ~ "DO",
                                                parameter_code == "00530" ~ "TSS",
-                                               parameter_code == "31641" ~ "FColiform", 
-                                               parameter_code == "00400" ~ "pH"))
+                                               parameter_code == "00600" ~ "TN",
+                                               parameter_code == "00665" ~ "TP"))
 
 ## Check for errors
 table(pollutant_dmrs$statistical_base_code, pollutant_dmrs$statistical_base_type_code)
@@ -90,6 +90,7 @@ table(pollutant_dmrs$statistical_base_code, pollutant_dmrs$statistical_base_type
 pollutant_dmrs <- pollutant_dmrs %>%
   mutate(pollutant_value = replace(pollutant_value, dmr_value_qualifier_code %in% list("<", "<=") & is.na(pollutant_value), 0)) %>%
   mutate(pollutant_value = replace(pollutant_value, pollutant_value < 0 & !is.na(pollutant_value), NA)) %>%
+  filter(!(dmr_value_qualifier_code %in% list(">", ">="))) %>%
   group_by(parameter_code, statistical_base_type_code) %>%
   mutate(pollutant_value = replace(pollutant_value, pollutant_value > quantile(pollutant_value, 0.99, na.rm = TRUE) & !is.na(pollutant_value), 
                                    quantile(pollutant_value, 0.99, na.rm = TRUE))) %>%
@@ -98,16 +99,33 @@ pollutant_dmrs <- pollutant_dmrs %>%
 
 
 ## Get data on major/minor status, design flow, POTW status from ICIS_PERMITS
-icis_permits <- fread(here::here("data", "csv_files", "ICIS_PERMITS.csv"))
-colnames(icis_permits) <- tolower(colnames(icis_permits))
-icis_permits <- icis_permits %>%
+load(here::here("data", "R_data_files", "all_potw_permits.Rda"))
+icis_permits2 <- icis_permits2 %>%
   rename_with(tolower) %>%
   select(external_permit_nmbr, version_nmbr, total_design_flow_nmbr, permit_status_code,
-         actual_average_flow_nmbr, major_minor_status_flag, facility_type_indicator)
+         actual_average_flow_nmbr, major_minor_status_flag, facility_type_indicator, 
+         component_type_desc)
 
+## Get data on permit components
+perm_components_pretreat <- fread(here::here("data", "csv_files", "NPDES_PERM_COMPONENTS.csv")) %>%
+  rename_with(tolower) %>%
+  select(-component_type_code) %>%
+  filter(component_type_desc == "Pretreatment") %>%
+  mutate(pretreat_flag = 1) %>%
+  select(-component_type_desc) 
 
-pollutant_dmrs <- inner_join(pollutant_dmrs, icis_permits, by=c("external_permit_nmbr", "version_nmbr"))
-
+## Merge ICIS_PERMITS and PERM_COMPONENTS with pollutant_dms
+pollutant_dmrs <- pollutant_dmrs %>%
+left_join(icis_permits2, by = c("external_permit_nmbr", "version_nmbr")) %>%
+  filter(!(permit_status_code %in% c("NON", "TRM"))) %>%
+  filter(facility_type_indicator == "POTW" | component_type_desc == "POTW") %>%
+  left_join(perm_components_pretreat, by = "external_permit_nmbr") %>%
+  mutate(pretreat_flag = if_else(is.na(pretreat_flag), 0, 1)) %>%
+  arrange(external_permit_nmbr, version_nmbr, monitoring_period_end_date2) %>%
+  filter(!is.na(total_design_flow_nmbr)) %>%
+  mutate(design_flow_round = plyr::round_any(total_design_flow_nmbr, 0.1, floor),
+         design_flow_round_smaller = plyr::round_any(total_design_flow_nmbr, .01, floor),
+         design_flow_round_small = plyr::round_any(total_design_flow_nmbr, .001, floor)) 
 
 
 ## Create separate object for each value_type_code
