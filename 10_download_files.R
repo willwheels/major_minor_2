@@ -124,6 +124,7 @@ icis_permits_most_recent_summarized <- icis_permits2 %>%
   group_by(EXTERNAL_PERMIT_NMBR) %>%             ## keep only most recent permit
   slice(1) %>%                                   ##
   ungroup() %>%
+  mutate(num_snc = replace_na(num_snc, 0)) |>
   mutate(e90_ratio = num_e90/num_limits_per_year) %>%
   filter(TOTAL_DESIGN_FLOW_NMBR <= 10) %>%
   group_by(design_flow_round_one_decimal) %>%
