@@ -109,7 +109,8 @@ icis_permits_most_recent_summarized <- icis_permits2 %>%
             mean_num_limits_per_year = mean(num_limits_per_year, na.rm = TRUE),
             mean_inspections = mean(num_inspections, na.rm = TRUE),
             sd_inspections = sd(num_inspections, na.rm = TRUE),
-            mean_CEI = mean(num_CEI, na.rm = TRUE),
+            mean_CMS = mean(num_CMS, na.rm = TRUE),
+            sd_CMS = sd(num_CMS, na.rm = TRUE),
             mean_e90_ratio = mean(e90_ratio, na.rm = TRUE),
             num_in_bin = n()) %>%
   arrange(desc(design_flow_round_one_decimal)) %>%
@@ -122,14 +123,6 @@ icis_permits3 <- icis_permits_most_recent_summarized %>%
 
 
 
-<<<<<<< HEAD
-ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_snc)) +
-  geom_line() +
-  labs(title = "Mean Number of Quarters in SNC Since 2018 by Design Flow") +
-  ylab("Mean Quarters in SNC") + xlab("Design Flow (rounded to single decimal)") +
-  theme_minimal()
-
-
 ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_snc, size = num_in_bin)) +
   geom_point(color = "#0082CB", alpha = 0.8) +  
   geom_errorbar(aes(ymin = mean_snc - 1.96*sd_snc/sqrt(num_in_bin), 
@@ -140,12 +133,6 @@ ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_snc, size 
            label = "1 MGD", size = 10) +
   geom_vline(xintercept = 1, linetype = 2) +
   labs(size = "No. Permits in Bin" ) +
-=======
-
-ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_snc, size = num_in_bin)) +
-  geom_point() +
->>>>>>> d9ba485bd23c63c1b4e9f76d41548371e12df29d
-  #labs(title = "Mean Number of Quarters in SNC Since 2018 by Design Flow") +
   ylab("Mean Quarters in SNC") + xlab("Design Flow") +
   theme_tina
 
@@ -177,7 +164,6 @@ ggplot(icis_permits3, aes(x = design_flow_round, y = mean_inspections)) +
 
 
 ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_inspections, size = num_in_bin)) +
-<<<<<<< HEAD
   geom_point(color = "#0082CB", alpha = 0.8) +  
   geom_errorbar(aes(ymin = mean_inspections - 1.96*sd_inspections/sqrt(num_in_bin), 
                     ymax = mean_inspections + 1.96*sd_inspections/sqrt(num_in_bin)),
@@ -185,10 +171,6 @@ ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_inspection
   annotate("text", x = 1.05, 
            y = max(subset(icis_permits3, design_flow_round_one_decimal <=2)$mean_inspections) + 2, 
            label = "1 MGD", size = 10) +
-=======
-  geom_point() +
-  annotate("text", x = 1.2, y = 5.75, label = "1 MGD") +
->>>>>>> d9ba485bd23c63c1b4e9f76d41548371e12df29d
   geom_vline(xintercept = 1, linetype = 2) +
   labs(size = "No. Permits in Bin" ) +
   ylab("Mean Number of Inspections") + xlab("Design Flow") +
@@ -198,14 +180,19 @@ ggsave("inspections_by_design_flow_dots.png",  path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")
 
 ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_CMS, size = num_in_bin)) +
-  geom_point() +
-  annotate("text", x = 1.2, y = 5.75, label = "1 MGD") +
+  geom_point(color = "#0082CB", alpha = 0.8) +  
+  geom_errorbar(aes(ymin = mean_CMS - 1.96*sd_CMS/sqrt(num_in_bin), 
+                    ymax = mean_CMS + 1.96*sd_CMS/sqrt(num_in_bin)),
+                width = 0.03, size = 0.4, show.legend = FALSE) +
+  annotate("text", x = 1.05, 
+           y = max(subset(icis_permits3, design_flow_round_one_decimal <=2)$mean_inspections) + 2, 
+           label = "1 MGD", size = 10) +
   geom_vline(xintercept = 1, linetype = 2) +
-  labs(title = "Mean Number of Compliance (CMS) Inspections Since 2018 by Design Flow") +
-  ylab("Mean Compliance Inspectionss") + xlab("Design Flow (rounded to single decimal)") +
+  labs(size = "No. Permits in Bin" ) +
+  ylab("Mean Number of Inspections") + xlab("Design Flow") +
   theme_tina
 
-ggsave("cei_inspections_by_design_flow_dots.png", path = here::here("figs"),
+ggsave("cms_inspections_by_design_flow_dots.png", path = here::here("figs"),
        h = 8.5, w = 11, units = "in", bg = "white")
 
 ggplot(icis_permits3, aes(x = design_flow_round, y = mean_num_limits_per_year, size = num_in_bin)) +
