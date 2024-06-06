@@ -10,7 +10,7 @@ load(here::here("data", "R_data_files", "all_potw_permits_most_recent.Rda"))
 source(here::here("theme_tina.R"))
 
 
-## Design flow histogram
+## Design flow histogram ----
 ggplot(icis_permits2 %>% filter(design_flow_round_one_decimal <= 5, design_flow_round_one_decimal > 0), 
        aes(x = design_flow_round_one_decimal)) +
   geom_histogram(binwidth = .1, color = "white") + 
@@ -69,7 +69,7 @@ ggsave("snc_by_design_flow_dots.png", path = here::here("figs"),
 
 
 
-## Mean e90
+## Mean e90 ----
 ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_e90, size = num_in_bin)) +
   geom_point(color = "#0082CB", alpha = 0.8) + 
   geom_errorbar(aes(ymin = mean_e90 - 1.96*sd_e90/sqrt(num_in_bin), 
@@ -86,7 +86,7 @@ ggsave("e90_by_design_flow_dots.png", path = here::here("figs"),
 
 
 
-## Mean e90 rate
+## Mean e90 rate ----
 ggplot(icis_permits3, aes(x = design_flow_round_one_decimal, y = mean_e90_rate, size = num_in_bin)) +
   geom_point(color = "#0082CB", alpha = 0.8) + 
   annotate("text", x = 1.05, y = max(icis_permits3$mean_e90_rate) + 0.05, label = "1 MGD", size = 10) +
