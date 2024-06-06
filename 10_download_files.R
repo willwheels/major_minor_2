@@ -110,7 +110,8 @@ npdes_inspections <- npdes_inspections %>%
   filter(end_date >= lubridate::mdy("01-01-2018")) %>%
   distinct() %>%  ## eliminate multiple entries on the same day
   group_by(NPDES_ID) %>%
-  summarise(num_inspections = n(), num_CEI = sum(COMP_MONITOR_TYPE_CODE == "CEI"))
+  summarise(num_inspections = n(), num_CMS = sum(COMP_MONITOR_TYPE_CODE %in% c("CEI", "SA1", "AU1", "DIA", "CBI",
+                                                                               "TX1" ))) #from https://www.epa.gov/sites/default/files/2013-09/documents/npdescms.pdf
 
 summary(npdes_inspections)
 
@@ -132,7 +133,7 @@ icis_permits_most_recent_summarized <- icis_permits2 %>%
             mean_e90 = mean(num_e90, na.rm = TRUE),
             mean_num_limits_per_year = mean(num_limits_per_year, na.rm = TRUE),
             mean_inspections = mean(num_inspections, na.rm = TRUE),
-            mean_CEI = mean(num_CEI, na.rm = TRUE),
+            mean_CMS = mean(num_CMS, na.rm = TRUE),
             mean_e90_ratio = mean(e90_ratio, na.rm = TRUE),
             num_in_bin = n()) %>%
   arrange(desc(design_flow_round_one_decimal)) %>%
