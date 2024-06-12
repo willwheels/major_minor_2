@@ -144,3 +144,14 @@ save(icis_permits2, file = here::here("data", "R_data_files", "all_potw_permits.
 
 save(icis_permits_most_recent_summarized, file = here::here("data", "R_data_files", "all_potw_permits_most_recent.Rda"))
 
+
+if(!file.exists(here::here("data", "REF_FREQUENCY_OF_ANALYSIS.csv"))) {
+  download.file("https://echo.epa.gov/system/files/REF_FREQUENCY_OF_ANALYSIS.csv", 
+                destfile = here::here("data", "REF_FREQUENCY_OF_ANALYSIS.csv"))
+}
+  
+
+if(!file.exists(here::here("data", "REF_SAMPLE_TYPE_0.csv"))) {
+  download.file("https://echo.epa.gov/system/files/REF_SAMPLE_TYPE_0.csv", 
+                destfile = here::here("data", "REF_SAMPLE_TYPE_0.csv"))
+}
