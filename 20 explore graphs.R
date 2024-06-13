@@ -68,10 +68,10 @@ ggplot(design_flow_counts %>% filter(design_flow_round_one_decimal <= 5, design_
        aes(x = design_flow_round_one_decimal, y = n)) +
   geom_col() + 
   annotate("rect", xmin = .7, xmax = 1.2, ymin = 250, ymax = 450, alpha = .2, color = "red") +
-  annotate("text", x = 1.5, y = 1500, label = "1 MGD") +
+  annotate("text", x = 1.3, y = 6700, label = "1 MGD", size = 10) +
   geom_vline(xintercept = 1, linetype = 2) +
   #labs(title = "Histogram of POTW Flows") +
-  xlab("Design Flow (rounded to single decimal)") + ylab("Count") +
+  xlab("Design Flow (MGD, 0.1 width bins)") + ylab("Count") +
   theme_tina
 
 ggsave("design_flow_col.png", path = here::here("figs"),
