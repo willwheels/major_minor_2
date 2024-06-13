@@ -150,7 +150,7 @@ bunching_estimators_two_decimals <- function(poly_value) {
                             + poly(half_number_est, poly_value) 
                             + poly(quarter_number_est, poly_value)
                             + poly(tenth_number_est, poly_value)
-                            + dummy_0.96 + dummy_0.96 + dummy_0.97 + dummy_0.98 + dummy_0.99
+                            + dummy_0.95 + dummy_0.96 + dummy_0.97 + dummy_0.98 + dummy_0.99
                             + dummy_1 + dummy_1.01 + dummy_1.02 + dummy_1.03 + dummy_1.04 + dummy_1.05,
                             data = design_flow_estimation_two_dec)
   
@@ -202,22 +202,65 @@ p3 <- ggplot(design_flow_counts_two_decimals
              aes(x = design_flow_round_two_decimals, y = n)) +
   geom_col() +
   #annotate("rect", xmin = .7, xmax = 1.2, ymin = 250, ymax = 450, alpha = .2, color = "red") +
-  annotate("text", x = 1.7, y = 1000, label = "1 MGD") +
+  annotate("text", x = 1.3, y = 1000, label = "1 MGD", size = 10) +
   geom_vline(xintercept = 1, linetype = 2) +
-  labs(title = "Histogram of POTW Flows") +
-  xlab("Design Flow (rounded to two decimals)") + ylab("Count") +
+  xlab("Design Flow (MGD, 0.01 width bins)") + ylab("Count") +
   theme_minimal()
 
-p3 +
+p3 <- p3 +
   geom_line(data = all_augment_results_two_dec |> filter(num_polynomial %in% c(5,6,7,8), design_flow_round_two_decimals <= top_bin/3),
             aes(x = design_flow_round_two_decimals, y = .fitted, 
-                group = num_polynomial, color = num_polynomial)) +
-  theme(legend.position = "none") +
-  theme_tina
-
+                group = num_polynomial, color = as.factor(num_polynomial))) +
+  theme(legend.position = "bottom") + 
+  scale_color_manual(values = c(5,6,7,8), name = "Polynomial Order") +
+  theme(text=element_text(size=20)) +
+  theme(axis.text=element_text(size=20)) +
+  theme(axis.title.x = element_text(size=30, margin=margin(20,0,0,0))) +
+  theme(axis.title.y = element_text(size=30, margin=margin(0,20,0,0))) +
+  theme(legend.key.size = unit(10, 'mm'), #change legend key size
+        legend.title = element_text(size=20), #change legend title font size
+        legend.text = element_text(size=20), #change legend text font size
+        legend.title.align = 0.5,
+        legend.margin=margin(10,0,0,0)) +
+  theme(plot.margin = margin(1,1,1.5,1.2,"cm"))
+p3
 
 ggsave("design_flow_hist_with_bunching.png", path = here::here("figs"),
-       h = 8.5, w = 11, units = "in", bg = "white")
+       h = 8.5, w = 11, units = "in", bg = "white", plot = p3)
+
+
+# Graphs for each polynomial ----
+
+for (i in poly_values){
+assign(paste0("p", as.character(i)), ggplot(design_flow_counts_two_decimals
+             %>% filter(design_flow_round_two_decimals <= top_bin/3, design_flow_round_two_decimals > 0),
+             aes(x = design_flow_round_two_decimals, y = n), color = "#36454F", alpha = 0.5) +
+  geom_col(show.legend=TRUE) +
+  geom_line(data = all_augment_results_two_dec |> filter(num_polynomial == i, design_flow_round_two_decimals <= top_bin/3, design_flow_round_two_decimals > 0),
+            aes(x = design_flow_round_two_decimals, y = .fitted), color = "#0082CB") +
+  annotate("text", x = 1.3, y = 1000, label = "1 MGD", size = 10) +
+  geom_vline(xintercept = 1, linetype = 2) +
+  xlab("Design Flow (MGD, 0.01 width bins)") + ylab("Count") +
+  theme(legend.position = "bottom") +
+  theme(legend.key.size = unit(3, 'mm'), #change legend key size
+        legend.title = element_text(size=20), #change legend title font size
+        legend.text = element_text(size=20), #change legend text font size
+        legend.title.align = 0.5,
+        legend.margin=margin(10,0,0,0)) +
+    theme(text=element_text(size=10)) +
+    theme(axis.text=element_text(size=20)) +
+    theme(axis.title.x = element_text(size=30, margin=margin(20,0,0,0))) +
+    theme(axis.title.y = element_text(size=30, margin=margin(0,20,0,0))) +
+    theme(plot.margin = margin(1,1,1.5,1.2,"cm")) +
+    theme_minimal())
+  ggsave(paste0("bunching_p", as.character(i), ".png"), path = here::here("figs"),
+         h = 8.5, w = 11, units = "in", bg = "white")
+  
+}
+
+  
+
+
 
 all_augment_results_two_dec_just_excluded <- all_augment_results_two_dec |>
   filter(design_flow_round_two_decimals %in% excluded_range)
