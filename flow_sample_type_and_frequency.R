@@ -1,15 +1,33 @@
 library(tidytable)
+library(ggplot2)
 
 load(here::here("data", "R_data_files", "all_potw_permits.Rda"))
 
-icis_permits2 <- icis_permits2 %>%
-  select(EXTERNAL_PERMIT_NMBR, VERSION_NMBR, design_flow_round_one_decimal)
+
+flow_counts <- icis_permits2 |> filter(design_flow_round_one_decimal <= 2, VERSION_NMBR == 0) |>
+  group_by(design_flow_round_one_decimal) |>
+  summarize(count_bin = n(),
+            count_actual_flow = sum(!is.na(ACTUAL_AVERAGE_FLOW_NMBR)),
+            mean_actual_flow = mean(ACTUAL_AVERAGE_FLOW_NMBR, na.rm = TRUE)) |>
+  ungroup() |>
+  mutate(pct_actual = count_actual_flow/count_bin)
+
+change_actual <- icis_permits2 |> filter(design_flow_round_one_decimal <= 2) |>
+  mutate(VERSION_NMBR = if_else(VERSION_NMBR == 0, 10, VERSION_NMBR)) |>
+  group_by(EXTERNAL_PERMIT_NMBR) |>
+  mutate(change = if_else(ACTUAL_AVERAGE_FLOW_NMBR == lag(ACTUAL_AVERAGE_FLOW_NMBR), 0, 1))
+
+summary(change_actual)
 
 ref_sample_types <- fread(here::here("data", "REF_SAMPLE_TYPE_0.csv"))
 ref_freq_analysis <- fread(here::here("data", "REF_FREQUENCY_OF_ANALYSIS.csv"))
 
 # Create a function that extracts rows with Flow DMRs 
 get_flow_sample_info <- function(year){
+  
+  inv_gc()
+  
+  print(paste(c("processing year", year)))
   
   ## Load DMR data
   load(here::here("data", "R_data_files", paste0("dmr_data_", year, ".Rda")))
@@ -41,6 +59,23 @@ get_flow_sample_info <- function(year){
     left_join(ref_sample_types, by = c("DMR_SAMPLE_TYPE_CODE" = "SAMPLE_TYPE_CODE")) |>
     rename(dmr_sample_type = "SAMPLE_TYPE_DESC")
   
+  return(dmr_data)
+  
+  inv_gc()
 }
 
-test_flow_data <- get_flow_sample_info("2021")
+dmr_years <- as.character(2018:2023)
+
+dmr_flow_data <- purrr::map(dmr_years, get_flow_sample_info)
+
+inv_gc()
+
+dmr_flow_data <- dmr_flow_data |>
+  bind_rows()
+
+inv_gc()
+
+save(dmr_flow_data, file = here::here("data", "R_data_files", "flow_with_freq_and_sample_type.Rda"), compress = TRUE)
+
+
+
