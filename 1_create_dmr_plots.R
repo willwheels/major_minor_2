@@ -52,11 +52,15 @@ flow_icis2 <- flow_icis %>%
   filter(total_design_flow_nmbr <= 2) %>%
   group_by(design_flow_round_one_decimal) %>%
   summarise(mean_flow = mean(flow_correct, na.rm = TRUE),
+            mean_flow_raw = mean(flow, na.rm = TRUE),
             sd_flow = sd(flow_correct, na.rm = TRUE),
+            sd_flow_raw = sd(flow, na.rm = TRUE),
             mean_flow_over_design = mean(flow_over_design, na.rm = TRUE),
             sd_flow_over_design = sd(flow_over_design, na.rm = TRUE),
             median_flow = median(flow_correct, na.rm = TRUE),
             median_flow_over_design = median(flow_over_design, na.rm = TRUE),
+            median_flow_raw = median(flow, na.rm = TRUE),
+            se_median_flow_raw = medianse(flow),
             num_in_bin = n()) %>%
   arrange(desc(design_flow_round_one_decimal)) %>%
   ungroup()
@@ -86,6 +90,32 @@ a <- a + theme(legend.key.size = unit(3, 'mm'), #change legend key size
 a <- a + theme(plot.margin = margin(1,1,1.5,1.2,"cm"))
 a
 ggsave(here::here("results", "flow_mean_flow_by_design_flow.png"), dpi = 300, plot=a, h = 8.5, w = 11, units = "in", bg = "white")
+
+aa <- ggplot(flow_icis2, aes(x = design_flow_round_one_decimal, y = mean_flow_raw, size = num_in_bin)) +
+  geom_point(color = "#0082CB", alpha = 0.8) +
+  geom_errorbar(aes(ymin = mean_flow_raw - 1.96*sd_flow_raw/sqrt(num_in_bin), 
+                    ymax = mean_flow_raw + 1.96*sd_flow_raw/sqrt(num_in_bin)),
+                width = 0.03, size = 0.4, show.legend = FALSE) +
+  annotate("text", x = 1.05, y = max(flow_icis2$mean_flow_raw) + 0.1, label = "1 MGD", size = 10) +
+  geom_vline(xintercept = 1, linetype = 2) +
+  labs(size = "No. Permits in Bin" ) +
+  ylab("Mean Flow (MGD)") + xlab("Design Flow (MGD)") +
+  theme_minimal()
+
+aa <- aa + theme(legend.position="bottom")
+aa <- aa + theme(text=element_text(size=10))
+aa <- aa + theme(axis.text=element_text(size=20))
+aa <- aa + theme(axis.title.x = element_text(size=30, margin=margin(20,0,0,0)))
+aa <- aa + theme(axis.title.y = element_text(size=30, margin=margin(0,20,0,0)))
+aa <- aa + theme(legend.key.size = unit(3, 'mm'), #change legend key size
+               legend.title = element_text(size=20), #change legend title font size
+               legend.text = element_text(size=20), #change legend text font size
+               legend.title.align = 0.5,
+               legend.margin=margin(10,0,0,0)) 
+aa <- aa + theme(plot.margin = margin(1,1,1.5,1.2,"cm"))
+aa
+ggsave(here::here("results", "flow_mean_flow_raw_by_design_flow.png"), dpi = 300, plot=aa, h = 8.5, w = 11, units = "in", bg = "white")
+
 
 b <- ggplot(flow_icis2, aes(x = design_flow_round_one_decimal, y = mean_flow_over_design, size = num_in_bin)) +
   geom_point(color = "#0082CB", alpha = 0.8) +
@@ -132,6 +162,31 @@ c <- c + theme(legend.key.size = unit(3, 'mm'), #change legend key size
                legend.margin=margin(10,0,0,0)) 
 c
 ggsave(here::here("results", "median_flow_by_design_flow.png"), dpi = 300, plot=c, h = 8.5, w = 11, units = "in", bg = "white")
+
+cc <- ggplot(flow_icis2, aes(x = design_flow_round_one_decimal, y = median_flow_raw, size = num_in_bin)) +
+  geom_point(color = "#0082CB") +
+  geom_errorbar(aes(ymin = median_flow_raw - se_median_flow_raw, 
+                    ymax = median_flow_raw + se_median_flow_raw),
+                width = 0.03, size = 0.4, show.legend = FALSE) +
+  annotate("text", x = 1.15, y = 1, label = "1 MGD", size = 10) +
+  geom_vline(xintercept = 1, linetype = 2) +
+  labs(size = "No. Permits in Bin" ) +
+  ylab("Median Flow (MGD)") + xlab("Design Flow (MGD)") +
+  theme_minimal()
+
+cc <- cc + theme(legend.position="bottom")
+cc <- cc + theme(text=element_text(size=30))
+cc <- cc + theme(axis.text=element_text(size=30))
+cc <- cc + theme(axis.title.x = element_text(size=40, margin=margin(30,0,0,0)))
+cc <- cc + theme(axis.title.y = element_text(size=40, margin=margin(0,30,0,0)))
+cc <- cc + theme(legend.key.size = unit(3, 'mm'), #change legend key size
+               legend.title = element_text(size=30), #change legend title font size
+               legend.text = element_text(size=30), #change legend text font size
+               legend.title.align = 0.5,
+               legend.margin=margin(10,0,0,0)) 
+cc
+ggsave(here::here("results", "median_flow_raw_by_design_flow.png"), dpi = 300, plot=cc, h = 8.5, w = 11, units = "in", bg = "white")
+
 
 d <- ggplot(flow_icis2, aes(x = design_flow_round_one_decimal, y = median_flow_over_design, size = num_in_bin)) +
   geom_point(color = "#0082CB") +
