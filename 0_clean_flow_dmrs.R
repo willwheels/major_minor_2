@@ -114,7 +114,8 @@ flow_dmrs$year = format(flow_dmrs$date, "%Y")
 #flow_dmrs <- select(flow_dmrs, -same)
 
 # Drop extra rows for violations
-flow_dmrs <- flow_dmrs %>% 
+flow_dmrs <- flow_dmrs %>%
+  filter(standard_unit_desc == "MGD") %>% ## For some reason, some flow measurements have a standard unit of mgd or occur/d
   group_by(dmr_value_id) %>% 
   slice(1) %>%
   ungroup()
