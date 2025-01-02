@@ -50,6 +50,24 @@ all_dmrs <- purrr::map(dmr_years, read_dmr_data)
 all_dmrs <- all_dmrs |>
   bind_rows()
 
+look_at_dists <- all_dmrs |>
+  filter(design_flow_round_one_decimal >= .8, design_flow_round_one_decimal <= 1.1,
+         PARAMETER_CODE %in% c("00530", "80082", "00610"),
+         !is.na(DMR_VALUE_NMBR)) |>
+  mutate(effluent_ratio = DMR_VALUE_NMBR/LIMIT_VALUE_NMBR)
+
+ggplot(look_at_dists |> filter(PARAMETER_CODE == "00530", effluent_ratio < 5),
+       aes(x = effluent_ratio, group = design_flow_round_one_decimal, color = design_flow_round_one_decimal)) +
+  geom_density() + 
+  theme_minimal() +
+  scale_color_viridis_c()
+
+ggplot(look_at_dists |> filter(PARAMETER_CODE == "80082", effluent_ratio < 10),
+       aes(x = effluent_ratio, group = design_flow_round_one_decimal, color = design_flow_round_one_decimal)) +
+  geom_density() + 
+  theme_minimal() +
+  scale_color_viridis_c()
+
 test2 <- all_dmrs|>
   filter(!is.na(DMR_VALUE_NMBR), !is.na(LIMIT_VALUE_NMBR)) |>
   group_by(EXTERNAL_PERMIT_NMBR) |>
